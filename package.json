@@ -1,0 +1,80 @@
+{
+  "name": "hathaway-web-examples",
+  "version": "0.0.1",
+  "description": "Web examples for the Hathaway React library.",
+  "license": "MIT",
+  "repository": "https://github.com/naddeoa/hathaway-web-examples",
+  "author": {
+    "name": "Anthony Naddeo",
+    "email": "anthony.naddeo@gmail.com",
+    "url": "https://github.com/naddeoa/hathaway-web-examples"
+  },
+  "keywords": [
+    "react",
+    "hathaway",
+    "minimal",
+    "simple",
+    "example",
+    "sample"
+  ],
+  "files": [
+    "lib"
+  ],
+  "main": "lib/index.js",
+  "typings": "lib/index.d.ts",
+  "scripts": {
+    "clean": "rimraf lib && rimraf coverage",
+    "format": "prettier --write \"{src,__tests__}/**/*.ts\" --single-quote --trailing-comma es5",
+    "lint": "tslint --force --format verbose \"src/**/*.ts\"",
+    "prepublish": "npm run build",
+    "prebuild": "npm run clean && npm run lint && echo Using TypeScript && tsc --version",
+    "build": "tsc --pretty",
+    "test": "jest",
+    "coverage": "jest --coverage",
+    "watch": "npm run build -- --watch",
+    "watch:test": "jest --watch",
+    "simple-demo": "concurrently -r 'npm run watch' 'webpack --entry ./lib/simple-demo/index.js --output-filename demo/simple-demo/bundle.js --watch' 'http-server -d false ./demo/simple-demo/'",
+    "github-user-browser": "concurrently -r 'npm run watch' 'webpack --entry ./lib/github-user-browser/index.js --output-filename demo/github-user-browser/bundle.js --watch' 'http-server -d false ./demo/github-user-browser/'",
+    "simple-demo-with-navigation": "concurrently -r 'npm run watch' 'webpack --entry ./lib/simple-demo-with-navigation/index.js --output-filename demo/simple-demo-with-navigation/bundle.js --watch' 'http-server ./demo/simple-demo-with-navigation/'"
+  },
+  "dependencies": {
+    "hathaway": "0.0.2",
+    "immutable": "^3.8.2",
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0"
+  },
+  "devDependencies": {
+    "@types/immutable": "^3.8.7",
+    "@types/jest": "^20.0.5",
+    "@types/node": "^8.0.0",
+    "@types/react": "^16.0.34",
+    "@types/react-dom": "^16.0.3",
+    "concurrently": "^3.5.1",
+    "coveralls": "^2.0.0",
+    "http-server": "^0.10.0",
+    "jest": "^20.0.4",
+    "jest-environment-node-debug": "^2.0.0",
+    "prettier": "^1.5.2",
+    "rimraf": "^2.6.2",
+    "ts-jest": "^20.0.7",
+    "ts-node": "^3.2.0",
+    "tslint": "^5.8.0",
+    "tslint-config-prettier": "^1.1.0",
+    "typescript": "^2.6.2",
+    "webpack": "^3.10.0"
+  },
+  "engines": {
+    "node": ">=6.0.0"
+  },
+  "jest": {
+    "transform": {
+      ".(ts)": "<rootDir>/node_modules/ts-jest/preprocessor.js"
+    },
+    "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(ts|js)$",
+    "moduleFileExtensions": [
+      "ts",
+      "js"
+    ],
+    "testEnvironment": "node"
+  }
+}
