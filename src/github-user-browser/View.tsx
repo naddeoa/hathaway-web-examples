@@ -5,6 +5,7 @@ import { parseRoute, Route } from './Routes';
 import Msg from './Msg';
 import UserPage from './views/UserPage';
 import UnknownPage from './views/UnknownPage';
+import SearchPage from './views/SearchPage';
 
 
 
@@ -13,7 +14,7 @@ const View: React.SFC<ViewProps<MyModel, Msg, {}>> = ({ model, dispatch }: ViewP
 
     switch (route.type) {
         case 'SearchRoute':
-            return <UserPage model={model} dispatch={dispatch} componentProps={{}} />
+            return <SearchPage model={model} dispatch={dispatch} componentProps={{}} />
         case 'UserRoute':
             return <UserPage model={model} dispatch={dispatch} componentProps={{}} />
         case 'UnknownRoute':

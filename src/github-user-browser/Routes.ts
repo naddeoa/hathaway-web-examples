@@ -19,12 +19,12 @@ export function parseRoute(): Route {
     let match;
     const { pathname } = window.location;
 
-    if (match = pathname.match('/user/(.*)/?')) {
+    if (match = pathname.match('^/user/(.*)/?$')) {
         const [, user] = match;
         return { type: 'UserRoute', user };
     }
 
-    if (pathname.match('/?')) {
+    if (pathname.match('^/?$')) {
         return { type: 'SearchRoute' };
     }
 

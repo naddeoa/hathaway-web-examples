@@ -113,9 +113,9 @@ export default function update(model: ImmutableModel<MyModel>, msg: Msg): [Immut
                     return update(model.set('showProfile', msg.route.user).set('usernameSearchText', msg.route.user), { type: 'OnUsernameSearch', pushInHistory: false });
                 case 'UnknownRoute':
                     return [model.set('showProfile', '').set('usernameSearchText', ''), NoOp];
+                default:
+                    throw 'Never happens';
             }
 
-            // Never happens. Why doesn't typescript realize this?
-            return [model, NoOp];
     }
 }
