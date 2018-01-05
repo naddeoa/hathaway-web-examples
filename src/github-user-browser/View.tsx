@@ -1,19 +1,24 @@
 import { ViewProps } from 'hathaway-core';
 import * as React from 'react';
 import { MyModel } from './Model';
+import { parseRoute, Route } from './Routes';
 import Msg from './Msg';
-import SearchBox from './views/SearchBox';
-import UserProfile from './views/UserProfile';
-import Repos from './views/Repos';
+import UserPage from './views/UserPage';
+import UnknownPage from './views/UnknownPage';
+
+
 
 const View: React.SFC<ViewProps<MyModel, Msg, {}>> = ({ model, dispatch }: ViewProps<MyModel, Msg, {}>) => {
-    return (
-        <div className="root">
-            <SearchBox model={model} dispatch={dispatch} componentProps={null} />
-            <UserProfile model={model} dispatch={dispatch} componentProps={null} />
-            <Repos model={model} dispatch={dispatch} componentProps={null} />
-        </div>
-    );
+    const route: Route = parseRoute();
+
+    switch (route.type) {
+        case 'SearchRoute':
+            return <UserPage model={model} dispatch={dispatch} componentProps={{}} />
+        case 'UserRoute':
+            return <UserPage model={model} dispatch={dispatch} componentProps={{}} />
+        case 'UnknownRoute':
+            return <UnknownPage model={model} dispatch={dispatch} componentProps={{}} />
+    }
 }
 
 export default View;

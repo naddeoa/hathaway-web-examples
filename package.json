@@ -34,11 +34,12 @@
     "watch": "npm run build -- --watch",
     "watch:test": "jest --watch",
     "simple-demo": "concurrently -r 'npm run watch' 'webpack --entry ./lib/simple-demo/index.js --output-filename demo/simple-demo/bundle.js --watch' 'http-server -d false ./demo/simple-demo/'",
-    "github-user-browser": "concurrently -r 'npm run watch' 'webpack --entry ./lib/github-user-browser/index.js --output-filename demo/github-user-browser/bundle.js --watch' 'http-server -d false ./demo/github-user-browser/'",
+    "github-user-browser": "concurrently -r 'npm run watch' 'webpack --entry ./lib/github-user-browser/index.js --output-filename demo/github-user-browser/bundle.js' 'node ./demo/github-user-browser/server.js'",
     "simple-demo-with-navigation": "concurrently -r 'npm run watch' 'webpack --entry ./lib/simple-demo-with-navigation/index.js --output-filename demo/simple-demo-with-navigation/bundle.js --watch' 'http-server ./demo/simple-demo-with-navigation/'"
   },
   "dependencies": {
-    "hathaway": "0.0.2",
+    "hathaway": "0.0.4",
+    "hathaway-core": "0.0.3",
     "immutable": "^3.8.2",
     "react": "^16.2.0",
     "react-dom": "^16.2.0"
@@ -54,6 +55,7 @@
     "http-server": "^0.10.0",
     "jest": "^20.0.4",
     "jest-environment-node-debug": "^2.0.0",
+    "live-server": "^1.2.0",
     "prettier": "^1.5.2",
     "rimraf": "^2.6.2",
     "ts-jest": "^20.0.7",

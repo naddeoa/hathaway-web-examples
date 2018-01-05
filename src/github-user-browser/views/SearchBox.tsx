@@ -7,7 +7,7 @@ import { KeyboardEvent } from 'react';
 const onEnter = (dispatch: Dispatch<Msg>) => (event: KeyboardEvent<HTMLElement>) => {
     if (event.keyCode === 13) {
         event.preventDefault();
-        dispatch({ type: 'OnUsernameSearch' })
+        dispatch({ type: 'OnUsernameSearch', pushInHistory: true })
     }
 }
 

@@ -1,6 +1,8 @@
-import { createModel, ImmutableModel } from 'hathaway-core';
+import { createModel, ImmutableModel, Cmd, NoOp, Dispatch } from 'hathaway-core';
 import { Map, List } from 'immutable';
 import { UserProfile, Repo, ProgrammingLanguages } from './GithubApi';
+import { parseRoute } from './Routes';
+import Msg from './Msg';
 
 export function addUserProfile(username: string, profile: UserProfile, model: ImmutableModel<MyModel>): ImmutableModel<MyModel> {
     return model.set('userProfiles', model.get('userProfiles').set(username, createModel(profile)));
@@ -72,9 +74,13 @@ export type MyModel = {
     programmingLanguages: Map<string, ProgrammingLanguagesModel>
 };
 
-const defaultValues = {
-    usernameSearchText: '',
-    showProfile: null,
+
+const initialRoute = parseRoute();
+console.log(initialRoute);
+
+const defaultValues: MyModel = {
+    usernameSearchText: initialRoute.type === 'UserRoute' ? initialRoute.user : '',
+    showProfile: initialRoute.type === 'UserRoute' ? initialRoute.user : null,
     userProfiles: Map<string, UserProfileModel>(),
     repos: Map<string, ReposModel>(),
     fetchingReposForProfile: Map<string, boolean>(),
@@ -83,4 +89,23 @@ const defaultValues = {
 
 export type Model = ImmutableModel<MyModel>;
 
-export const initialValue: Model = createModel(defaultValues);
+const initialValue: Model = createModel(defaultValues);
+
+function getInitialCmd(): Cmd<MyModel, Msg> {
+    if (defaultValues.showProfile === null) {
+        return NoOp;
+    }
+
+    const cmd: Cmd<MyModel, Msg> = {
+        type: 'AsyncCmd',
+        promise: Promise.resolve(),
+        successFunction: (dispatch: Dispatch<Msg>, model: Model, _result: null) => {
+            dispatch({ type: 'OnUsernameSearch', pushInHistory: true});
+            return [model, NoOp];
+        }
+    };
+
+    return cmd;
+}
+
+export const init: [ImmutableModel<MyModel>, Cmd<MyModel, Msg>] = [initialValue, getInitialCmd()]
