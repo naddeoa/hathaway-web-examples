@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { ViewProps, ImmutableModel } from 'hathaway-core';
-import { MyModel, lookupRepos, RepoModel, lookupUserProfile, currentlyFetchingRepos, ProgrammingLanguagesModel, lookupProgrammingLanguagesModel } from '../Model';
+import { MyModel, lookupRepos, RepoModel, lookupUserProfile, currentlyFetching, ProgrammingLanguagesModel, lookupProgrammingLanguagesModel } from '../Model';
 import Msg from '../Msg';
 
 function ProgrammingLanguagesView({ languages, repo }: { languages: ProgrammingLanguagesModel | null, repo: RepoModel }) {
@@ -58,7 +58,7 @@ const View: React.SFC<ViewProps<MyModel, Msg, null>> = ({ model }: ViewProps<MyM
     }
 
     const repos = lookupRepos(profile, model);
-    const fetching = currentlyFetchingRepos(profile, model);
+    const fetching = currentlyFetching(profile, model);
     if (repos === null && !fetching) {
         return (
             <div>Fetchign repos... {username}</div>

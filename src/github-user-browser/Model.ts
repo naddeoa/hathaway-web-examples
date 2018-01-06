@@ -18,18 +18,23 @@ export function lookupUserProfile(username: string, model: ImmutableModel<MyMode
     return profile;
 }
 
-export function currentlyFetchingRepos(profile: UserProfileModel, model: ImmutableModel<MyModel>): boolean {
-    const fetching = model.get('fetchingReposForProfile').get(profile.get('id'));
-    if (!fetching) {
-        return false;
+export type Username = string;
+export function currentlyFetching(thing: UserProfileModel | Username, model: ImmutableModel<MyModel>): boolean {
+    if (typeof thing === 'string') {
+        return model.get('requestHappeningFor').get(thing) === true;
     }
 
-    return fetching;
+    return model.get('requestHappeningFor').get(thing.get('id')) === true;
 }
 
-export function setCurrentlyFetchingRepos(profile: UserProfileModel, fetching: boolean, model: ImmutableModel<MyModel>): ImmutableModel<MyModel> {
-    const fetchingStatus = model.get('fetchingReposForProfile').set(profile.get('id'), fetching);
-    return model.set('fetchingReposForProfile', fetchingStatus);
+export function setCurrentlyFetching(thing: UserProfileModel | Username, fetching: boolean, model: ImmutableModel<MyModel>): ImmutableModel<MyModel> {
+    if (typeof thing === 'string') {
+        const fetchingStatus = model.get('requestHappeningFor').set(thing, fetching);
+        return model.set('requestHappeningFor', fetchingStatus);
+    }
+
+    const fetchingStatus = model.get('requestHappeningFor').set(thing.get('id'), fetching);
+    return model.set('requestHappeningFor', fetchingStatus);
 }
 
 export function addRepos(profile: UserProfileModel, repos: Repo[], model: ImmutableModel<MyModel>): ImmutableModel<MyModel> {
@@ -70,7 +75,7 @@ export type MyModel = {
     showProfile: string | null,
     userProfiles: Map<string, UserProfileModel>,
     repos: Map<string, ReposModel>,
-    fetchingReposForProfile: Map<string, boolean>,
+    requestHappeningFor: Map<string, boolean>,
     programmingLanguages: Map<string, ProgrammingLanguagesModel>
 };
 
@@ -83,7 +88,7 @@ const defaultValues: MyModel = {
     showProfile: initialRoute.type === 'UserRoute' ? initialRoute.user : null,
     userProfiles: Map<string, UserProfileModel>(),
     repos: Map<string, ReposModel>(),
-    fetchingReposForProfile: Map<string, boolean>(),
+    requestHappeningFor: Map<string, boolean>(),
     programmingLanguages: Map<string, Map<string, number>>()
 };
 
@@ -100,7 +105,7 @@ function getInitialCmd(): Cmd<MyModel, Msg> {
         type: 'AsyncCmd',
         promise: Promise.resolve(),
         successFunction: (dispatch: Dispatch<Msg>, model: Model, _result: null) => {
-            dispatch({ type: 'OnUsernameSearch', pushInHistory: true});
+            dispatch({ type: 'OnUsernameSearch', pushInHistory: true });
             return [model, NoOp];
         }
     };

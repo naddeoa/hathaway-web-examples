@@ -1,6 +1,6 @@
 import { ImmutableModel, Cmd, NoOp } from 'hathaway-core';
 import Msg from './Msg';
-import { MyModel, addUserProfile, addRepos, currentlyFetchingRepos, setCurrentlyFetchingRepos, lookupUserProfile, addProgammingLanguages, lookupRepos, RepoModel } from './Model';
+import { MyModel, addUserProfile, addRepos, currentlyFetching, setCurrentlyFetching, lookupUserProfile, addProgammingLanguages, lookupRepos, RepoModel } from './Model';
 import { getUserProfile, getUserRepos, UserProfile, Repo, getProgrammingLangugesForRepos, ProgrammingLanguages } from './GithubApi';
 import { createPath, Route } from './Routes';
 
@@ -9,23 +9,20 @@ export default function update(model: ImmutableModel<MyModel>, msg: Msg): [Immut
 
     switch (msg.type) {
         case 'OnUsernameSearch':
+            const username = model.get('usernameSearchText');
             // Don't refetch if we already have what we need
-            if (model.get('userProfiles').has(model.get('usernameSearchText')) &&
-                lookupUserProfile(model.get('usernameSearchText'), model) !== null) {
-                return [model.set('showProfile', model.get('usernameSearchText')), NoOp];
+            if (model.get('userProfiles').has(username) &&
+                lookupUserProfile(username, model) !== null) {
+                return [model.set('showProfile', username), NoOp];
             }
-
-
 
             const asyncUpdate: Cmd<MyModel, Msg> = {
                 type: 'AsyncCmd',
-                promise: getUserProfile(model.get('usernameSearchText')).catch(_reason => {
-                    alert("Can't find user " + model.get('usernameSearchText'));
+                promise: getUserProfile(username).catch(_reason => {
+                    alert("Can't find user " + username);
                     return null;
                 }),
                 successFunction: (dispatch, newModelState, result: UserProfile | null) => {
-                    let username = model.get('usernameSearchText');
-
                     if (msg.pushInHistory) {
                         const newRoute: Route = { type: 'UserRoute', user: username };
                         window.history.pushState(newRoute, document.title, createPath(newRoute));
@@ -36,7 +33,9 @@ export default function update(model: ImmutableModel<MyModel>, msg: Msg): [Immut
                         return [newModelState.set('showProfile', null), NoOp];
                     }
 
-                    const updatedModel = addUserProfile(username, result, newModelState).set('showProfile', username);
+                    let updatedModel = addUserProfile(username, result, newModelState).set('showProfile', username);
+                    updatedModel = setCurrentlyFetching(username, false, updatedModel);
+
                     // Request the repos next
                     const profileModel = lookupUserProfile(username, updatedModel);
                     profileModel && dispatch({ type: 'FetchReposForUser', user: profileModel });
@@ -44,7 +43,7 @@ export default function update(model: ImmutableModel<MyModel>, msg: Msg): [Immut
                 }
             }
 
-            return [model, asyncUpdate];
+            return [setCurrentlyFetching(username, true, model.set('showProfile', username)), asyncUpdate];
 
         case 'OnUsernameSearchChanged':
             return [model.set('usernameSearchText', msg.text), NoOp];
@@ -69,7 +68,7 @@ export default function update(model: ImmutableModel<MyModel>, msg: Msg): [Immut
             return [model, languagesUpdate];
 
         case 'FetchReposForUser':
-            if (currentlyFetchingRepos(msg.user, model)) {
+            if (currentlyFetching(msg.user, model)) {
                 // Already a request happening
                 return [model, NoOp];
             }
@@ -81,7 +80,7 @@ export default function update(model: ImmutableModel<MyModel>, msg: Msg): [Immut
                     return null;
                 }),
                 successFunction: (dispatch, newModelState, result: Repo[] | null) => {
-                    const updatedModel = setCurrentlyFetchingRepos(msg.user, false, newModelState);
+                    const updatedModel = setCurrentlyFetching(msg.user, false, newModelState);
                     if (result === null) {
                         return [addRepos(msg.user, [], updatedModel), NoOp];
                     }
@@ -99,7 +98,7 @@ export default function update(model: ImmutableModel<MyModel>, msg: Msg): [Immut
                 }
             }
 
-            return [setCurrentlyFetchingRepos(msg.user, true, model), reposUpdate];
+            return [setCurrentlyFetching(msg.user, true, model), reposUpdate];
 
         case 'NavigateBack':
             if (msg.route === null) {

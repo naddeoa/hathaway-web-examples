@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { ViewProps } from 'hathaway-core';
-import { MyModel, UserProfileModel, lookupUserProfile } from '../Model';
+import { MyModel, UserProfileModel, lookupUserProfile, currentlyFetching } from '../Model';
 import Msg from '../Msg';
 
 function UserStats({ profile }: { profile: UserProfileModel }) {
@@ -17,13 +17,14 @@ function UserStats({ profile }: { profile: UserProfileModel }) {
     );
 }
 
-
 const View: React.SFC<ViewProps<MyModel, Msg, null>> = ({ model }: ViewProps<MyModel, Msg, null>) => {
     const username = model.get('showProfile');
     if (username === null) {
-        return (
-            <div>Try to search for a github username</div>
-        );
+        return <div>Try to search for a github username</div>;
+    }
+
+    if (currentlyFetching(username, model)) {
+        return <div>Fetching user...</div>;
     }
 
     const profile = lookupUserProfile(username, model);
