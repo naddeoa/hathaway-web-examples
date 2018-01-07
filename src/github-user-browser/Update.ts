@@ -10,6 +10,12 @@ export default function update(model: ImmutableModel<MyModel>, msg: Msg): [Immut
     switch (msg.type) {
         case 'OnUsernameSearch':
             const username = model.get('usernameSearchText');
+
+            if (msg.pushInHistory) {
+                const newRoute: Route = { type: 'UserRoute', user: username };
+                window.history.pushState(newRoute, document.title, createPath(newRoute));
+            }
+
             // Don't refetch if we already have what we need
             if (model.get('userProfiles').has(username) &&
                 lookupUserProfile(username, model) !== null) {
@@ -23,11 +29,6 @@ export default function update(model: ImmutableModel<MyModel>, msg: Msg): [Immut
                     return null;
                 }),
                 successFunction: (dispatch, newModelState, result: UserProfile | null) => {
-                    if (msg.pushInHistory) {
-                        const newRoute: Route = { type: 'UserRoute', user: username };
-                        window.history.pushState(newRoute, document.title, createPath(newRoute));
-                    }
-
                     // If we couldn't get the user then we're not going to be showing anything
                     if (result === null) {
                         return [newModelState.set('showProfile', null), NoOp];
