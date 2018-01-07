@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { ViewProps, Dispatch } from 'hathaway-core';
+import { ViewProps, Dispatch } from 'hathaway';
 import { MyModel } from '../Model';
 import Msg from '../Msg';
 import { KeyboardEvent } from 'react';

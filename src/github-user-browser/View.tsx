@@ -1,4 +1,4 @@
-import { ViewProps } from 'hathaway-core';
+import { ViewProps } from 'hathaway';
 import * as React from 'react';
 import { MyModel } from './Model';
 import { parseRoute, Route } from './Routes';

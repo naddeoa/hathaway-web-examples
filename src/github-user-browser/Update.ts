@@ -1,4 +1,4 @@
-import { ImmutableModel, Cmd, NoOp } from 'hathaway-core';
+import { ImmutableModel, Cmd, NoOp, call2, call3, arg2, modelSet } from 'hathaway';
 import Msg from './Msg';
 import { MyModel, addUserProfile, addRepos, currentlyFetching, setCurrentlyFetching, lookupUserProfile, addProgammingLanguages, lookupRepos, RepoModel } from './Model';
 import { getUserProfile, getUserRepos, UserProfile, Repo, getProgrammingLangugesForRepos, ProgrammingLanguages } from './GithubApi';
@@ -33,17 +33,26 @@ export default function update(model: ImmutableModel<MyModel>, msg: Msg): [Immut
                         return [newModelState.set('showProfile', null), NoOp];
                     }
 
-                    let updatedModel = addUserProfile(username, result, newModelState).set('showProfile', username);
-                    updatedModel = setCurrentlyFetching(username, false, updatedModel);
+                    const updatedModel = call3(
+                        arg2(addUserProfile, username, result),
+                        arg2(modelSet, 'showProfile', username),
+                        arg2(setCurrentlyFetching, username, false),
+                        newModelState);
 
                     // Request the repos next
                     const profileModel = lookupUserProfile(username, updatedModel);
                     profileModel && dispatch({ type: 'FetchReposForUser', user: profileModel });
+
                     return [updatedModel, NoOp];
                 }
             }
 
-            return [setCurrentlyFetching(username, true, model.set('showProfile', username)), asyncUpdate];
+            const updatedModel = call2(
+                arg2(setCurrentlyFetching, username, true),
+                arg2(modelSet, 'showProfile', username),
+                model);
+
+            return [updatedModel, asyncUpdate];
 
         case 'OnUsernameSearchChanged':
             return [model.set('usernameSearchText', msg.text), NoOp];
@@ -52,16 +61,16 @@ export default function update(model: ImmutableModel<MyModel>, msg: Msg): [Immut
 
             const languagesUpdate: Cmd<MyModel, Msg> = {
                 type: 'AsyncCmd',
-                promise: getProgrammingLangugesForRepos(msg.repo).catch(err => {
-                    console.log(`Can't find programming languages for repo ${msg.repo.get('name')}: ${err}`);
-                    return null;
-                }),
+                promise: getProgrammingLangugesForRepos(msg.repo),
                 successFunction: (_dispatch, newModelState, result: ProgrammingLanguages | null) => {
                     if (result === null) {
                         return [newModelState, NoOp];
                     }
 
                     return [addProgammingLanguages(msg.repo, result, newModelState), NoOp];
+                },
+                errorFunction: (_dispatch, _newModelState, err: string) => {
+                    console.log(`Can't find programming languages for repo ${msg.repo.get('name')}: ${err}`);
                 }
 
             }
@@ -75,10 +84,7 @@ export default function update(model: ImmutableModel<MyModel>, msg: Msg): [Immut
 
             const reposUpdate: Cmd<MyModel, Msg> = {
                 type: 'AsyncCmd',
-                promise: getUserRepos(msg.user).catch(reason => {
-                    alert(`Can't get repos for user ${model.get('usernameSearchText')}: ${reason}`);
-                    return null;
-                }),
+                promise: getUserRepos(msg.user),
                 successFunction: (dispatch, newModelState, result: Repo[] | null) => {
                     const updatedModel = setCurrentlyFetching(msg.user, false, newModelState);
                     if (result === null) {
@@ -95,12 +101,15 @@ export default function update(model: ImmutableModel<MyModel>, msg: Msg): [Immut
                     });
 
                     return [finalModel, NoOp];
+                },
+                errorFunction: (_dispatch, _newModelState, reason: string) => {
+                    alert(`Can't get repos for user ${model.get('usernameSearchText')}: ${reason}`);
                 }
             }
 
             return [setCurrentlyFetching(msg.user, true, model), reposUpdate];
 
-        case 'NavigateBack':
+        case 'Navigate':
             if (msg.route === null) {
                 return [model.set('showProfile', '').set('usernameSearchText', ''), NoOp];
             }

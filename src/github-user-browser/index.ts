@@ -1,4 +1,4 @@
-import { Program, Dispatch } from 'hathaway-core';
+import { Program, Dispatch } from 'hathaway';
 import { start } from 'hathaway';
 import { init, MyModel } from './Model';
 import Msg from './Msg';
@@ -15,7 +15,7 @@ if (el) {
         renderTarget: el,
         dev: true,
         setupCallbacks: function (dispatch: Dispatch<Msg>) {
-            window.onpopstate = (event: PopStateEvent) => dispatch({ type: 'NavigateBack', route: event.state });
+            window.onpopstate = (event: PopStateEvent) => dispatch({ type: 'Navigate', route: event.state });
         }
     };
 

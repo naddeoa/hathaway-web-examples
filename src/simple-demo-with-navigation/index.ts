@@ -1,4 +1,4 @@
-import { Program, Dispatch } from 'hathaway-core';
+import { Program, Dispatch } from 'hathaway';
 import { start } from 'hathaway';
 import { initialValue, CountModel } from './Model';
 import Msg from './Msg';

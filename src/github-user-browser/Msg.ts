@@ -21,8 +21,8 @@ export interface FetchLanguagesForRepo {
     repo: RepoModel
 }
 
-export interface NavigateBack {
-    type: 'NavigateBack',
+export interface Navigate {
+    type: 'Navigate',
     route: Route
 }
 
@@ -31,6 +31,6 @@ export type Msg =
     | OnUsernameSearchChanged
     | FetchReposForUser
     | FetchLanguagesForRepo
-    | NavigateBack
+    | Navigate
 
 export default Msg;

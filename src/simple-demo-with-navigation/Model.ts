@@ -1,4 +1,4 @@
-import { createModel, ImmutableModel } from 'hathaway-core';
+import { createModel, ImmutableModel } from 'hathaway';
 
 export type CountModel = {
     pathname: string

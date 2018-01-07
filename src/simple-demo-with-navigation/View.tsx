@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { ViewProps, ImmutableModel } from 'hathaway-core';
+import { ViewProps, ImmutableModel } from 'hathaway';
 import { CountModel } from './Model';
 import Msg from './Msg';
 import UnknownPage from './UnknownPage';

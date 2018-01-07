@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { ViewProps } from 'hathaway-core';
+import { ViewProps } from 'hathaway';
 import { MyModel, UserProfileModel, lookupUserProfile, currentlyFetching } from '../Model';
 import Msg from '../Msg';
 

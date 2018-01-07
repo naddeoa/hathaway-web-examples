@@ -1,4 +1,4 @@
-import { createModel, ImmutableModel, Cmd, NoOp, Dispatch } from 'hathaway-core';
+import { createModel, ImmutableModel, Cmd, NoOp, Dispatch } from 'hathaway';
 import { Map, List } from 'immutable';
 import { UserProfile, Repo, ProgrammingLanguages } from './GithubApi';
 import { parseRoute } from './Routes';
@@ -81,7 +81,6 @@ export type MyModel = {
 
 
 const initialRoute = parseRoute();
-console.log(initialRoute);
 
 const defaultValues: MyModel = {
     usernameSearchText: initialRoute.type === 'UserRoute' ? initialRoute.user : '',

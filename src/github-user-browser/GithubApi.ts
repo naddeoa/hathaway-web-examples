@@ -4,7 +4,7 @@ function appendKey(url: string): string {
     return `${url}?client_secret=072b5041986c59c65804831ba94086ea043e04be&client_id=185bde446d817f14681f`;
 }
 
-export type UserProfile = {
+export type UserProfile  = {
     id: string,
     avatar_url: string,
     url: string,
@@ -32,7 +32,7 @@ export async function getUserProfile(username: string): Promise<UserProfile> {
 }
 
 
-export type Repo = {
+export type Repo  = {
     id: string,
     name: string,
     html_url: string,
@@ -88,8 +88,8 @@ function isProgrammingLanguages(a: any): a is Record<string, number> {
     return Number.isInteger(someValue);
 }
 
-export type ProgrammingLanguages = {
-    [k: string] : number
+export interface ProgrammingLanguages {
+    [k: string]: number
 };
 
 export async function getProgrammingLangugesForRepos(repo: RepoModel): Promise<ProgrammingLanguages> {
@@ -97,7 +97,7 @@ export async function getProgrammingLangugesForRepos(repo: RepoModel): Promise<P
     const response = await fetch(url);
     const responseJson = await response.json();
 
-    if(!isProgrammingLanguages(responseJson)){
+    if (!isProgrammingLanguages(responseJson)) {
         throw new Error(`Unexpected return object from Github: ${JSON.stringify(responseJson)}`);
     }
 

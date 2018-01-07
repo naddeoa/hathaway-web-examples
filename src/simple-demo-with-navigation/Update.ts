@@ -1,4 +1,4 @@
-import { ImmutableModel, Cmd, NoOp } from 'hathaway-core';
+import { ImmutableModel, Cmd, NoOp } from 'hathaway';
 import Msg from './Msg';
 import { CountModel } from './Model';
 
