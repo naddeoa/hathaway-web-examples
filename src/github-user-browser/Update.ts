@@ -1,15 +1,15 @@
-import { ImmutableModel, Cmd, NoOp, call2, call3, arg2, modelSet } from 'hathaway';
+import { ImmutableModel, Cmd, NoOp, pipe, f } from 'hathaway';
 import Msg from './Msg';
-import { MyModel, addUserProfile, addRepos, currentlyFetching, setCurrentlyFetching, lookupUserProfile, addProgammingLanguages, lookupRepos, RepoModel } from './Model';
+import { MyModel, addUserProfile, addRepos, currentlyFetching, setCurrentlyFetching, lookupUserProfile, addProgammingLanguages, lookupRepos, RepoModel, modelSet } from './Model';
 import { getUserProfile, getUserRepos, UserProfile, Repo, getProgrammingLangugesForRepos, ProgrammingLanguages } from './GithubApi';
 import { createPath, Route } from './Routes';
-
 
 export default function update(model: ImmutableModel<MyModel>, msg: Msg): [ImmutableModel<MyModel>, Cmd<MyModel, Msg>] {
 
     switch (msg.type) {
         case 'OnUsernameSearch':
             const username = model.get('usernameSearchText');
+
 
             if (msg.pushInHistory) {
                 const newRoute: Route = { type: 'UserRoute', user: username };
@@ -34,11 +34,10 @@ export default function update(model: ImmutableModel<MyModel>, msg: Msg): [Immut
                         return [newModelState.set('showProfile', null), NoOp];
                     }
 
-                    const updatedModel = call3(
-                        arg2(addUserProfile, username, result),
-                        arg2(modelSet, 'showProfile', username),
-                        arg2(setCurrentlyFetching, username, false),
-                        newModelState);
+                    const updatedModel = pipe(newModelState,
+                        f(addUserProfile, username, result),
+                        f(modelSet, 'showProfile', username),
+                        f(setCurrentlyFetching, username, false));
 
                     // Request the repos next
                     const profileModel = lookupUserProfile(username, updatedModel);
@@ -48,10 +47,9 @@ export default function update(model: ImmutableModel<MyModel>, msg: Msg): [Immut
                 }
             }
 
-            const updatedModel = call2(
-                arg2(setCurrentlyFetching, username, true),
-                arg2(modelSet, 'showProfile', username),
-                model);
+            const updatedModel = pipe(model,
+                f(setCurrentlyFetching, username, true),
+                f(modelSet, 'showProfile', username));
 
             return [updatedModel, asyncUpdate];
 

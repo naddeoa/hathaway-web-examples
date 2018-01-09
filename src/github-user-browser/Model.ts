@@ -4,6 +4,10 @@ import { UserProfile, Repo, ProgrammingLanguages } from './GithubApi';
 import { parseRoute } from './Routes';
 import Msg from './Msg';
 
+export function modelSet(key: keyof MyModel, value: MyModel[keyof MyModel], model: ImmutableModel<MyModel>) : ImmutableModel<MyModel>{
+    return model.set(key, value);
+}
+
 export function addUserProfile(username: string, profile: UserProfile, model: ImmutableModel<MyModel>): ImmutableModel<MyModel> {
     return model.set('userProfiles', model.get('userProfiles').set(username, createModel(profile)));
 }
