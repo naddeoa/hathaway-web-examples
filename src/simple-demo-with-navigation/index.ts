@@ -1,5 +1,4 @@
-import { Program, Dispatch } from 'hathaway';
-import { start } from 'hathaway';
+import { start, Program, Dispatch } from 'hathaway';
 import { initialValue, CountModel } from './Model';
 import Msg from './Msg';
 import update from './Update';
@@ -12,12 +11,11 @@ if (el) {
         init: initialValue,
         update,
         view: View,
-        renderTarget: el,
         dev: true,
         setupCallbacks: function (dispatch: Dispatch<Msg>) {
             window.onpopstate = (event: PopStateEvent) => dispatch({ type: 'NavigationEvent', event });
         }
     };
 
-    start(program);
+    start(el, program);
 }
