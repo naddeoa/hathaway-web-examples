@@ -1,7 +1,7 @@
+import { Map } from 'immutable';
 import * as React from 'react';
-import { ViewProps, ImmutableModel } from 'hathaway';
-import { MyModel, lookupRepos, RepoModel, lookupUserProfile, currentlyFetching, ProgrammingLanguagesModel, lookupProgrammingLanguagesModel } from '../Model';
-import Msg from '../Msg';
+
+import { ProgrammingLanguagesModel, RepoModel, ReposModel, UserProfileModel } from '../Model';
 
 function ProgrammingLanguagesView({ languages, repo }: { languages: ProgrammingLanguagesModel | null, repo: RepoModel }) {
     if (languages === null) {
@@ -21,18 +21,23 @@ function ProgrammingLanguagesView({ languages, repo }: { languages: ProgrammingL
     );
 }
 
-function RepoView({ repo, model }: { repo: RepoModel | undefined, model: ImmutableModel<MyModel> }) {
+
+interface RepoViewProps {
+    languages: Map<string, ProgrammingLanguagesModel>,
+    repo?: RepoModel
+}
+
+function RepoView({ repo, languages }: RepoViewProps) {
     if (!repo) {
         return null;
     }
 
-    const languages: ProgrammingLanguagesModel | null = lookupProgrammingLanguagesModel(repo, model);
-
+    const languageData = languages.get(repo.get('id')) || null;
 
     return (
         <div className='repo'>
             <a target='_blank' href={repo.get('html_url')}> <h2>{repo.get('name')}</h2></a>
-            <ProgrammingLanguagesView languages={languages} repo={repo} />
+            <ProgrammingLanguagesView languages={languageData} repo={repo} />
             <p>{repo.get('description')}</p>
             <ul>
                 {repo.get('fork') && <li className='fork'>fork</li>}
@@ -44,22 +49,24 @@ function RepoView({ repo, model }: { repo: RepoModel | undefined, model: Immutab
     );
 }
 
-const View: React.SFC<ViewProps<MyModel, Msg, null>> = ({ model }: ViewProps<MyModel, Msg, null>) => {
-    const username = model.get('showProfile');
+export interface Props {
+    username: string | null,
+    profile: UserProfileModel | null,
+    isFetching: boolean,
+    repos: ReposModel | null,
+    languages: Map<string, ProgrammingLanguagesModel>
+}
 
+const View: React.SFC<Props> = ({ username, isFetching, repos, profile, languages }: Props) => {
     if (username === null) {
         return null;
     }
-
-    const profile = lookupUserProfile(username, model);
 
     if (profile === null) {
         return null;
     }
 
-    const repos = lookupRepos(profile, model);
-    const fetching = currentlyFetching(profile, model);
-    if (repos === null && !fetching) {
+    if (repos === null && !isFetching) {
         return (
             <div>Fetchign repos... {username}</div>
         );
@@ -76,7 +83,7 @@ const View: React.SFC<ViewProps<MyModel, Msg, null>> = ({ model }: ViewProps<MyM
     return (
         <div className='repositories'>
             <h1>Repositories</h1>
-            {repos.map(repo => <RepoView repo={repo} model={model} key={repo === undefined ? 'remove-when-immutable4-released' : repo.get('id')} />)}
+            {repos.map(repo => <RepoView repo={repo} languages={languages} key={repo === undefined ? 'remove-when-immutable4-released' : repo.get('id')} />)}
         </div>
     );
 }

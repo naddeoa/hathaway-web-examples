@@ -1,8 +1,8 @@
+import { Dispatch } from 'hathaway';
 import * as React from 'react';
-import { ViewProps, Dispatch } from 'hathaway';
-import { MyModel } from '../Model';
-import Msg from '../Msg';
 import { KeyboardEvent } from 'react';
+
+import Msg from '../Msg';
 
 const onEnter = (dispatch: Dispatch<Msg>) => (event: KeyboardEvent<HTMLElement>) => {
     if (event.keyCode === 13) {
@@ -15,12 +15,19 @@ const onChange = (dispatch: Dispatch<Msg>) => (event: React.ChangeEvent<HTMLInpu
     dispatch({ type: 'OnUsernameSearchChanged', text: event.target.value });
 }
 
-const View: React.SFC<ViewProps<MyModel, Msg, null>> = ({ model, dispatch }: ViewProps<MyModel, Msg, null>) => {
+
+export type Props = {
+    username: string,
+    dispatch: Dispatch<Msg>
+
+}
+const View: React.SFC<Props> = ({ username, dispatch }) => {
     return (
         <div className="search-container">
-            <input className="user-search" placeholder="Search for a github user" onKeyUp={onEnter(dispatch)} onChange={onChange(dispatch)} value={model.get('usernameSearchText')} />
+            <input className="user-search" placeholder="Search for a github user" onKeyUp={onEnter(dispatch)} onChange={onChange(dispatch)} value={username} />
         </div>
     );
 }
+
 
 export default View;

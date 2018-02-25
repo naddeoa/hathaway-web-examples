@@ -38,7 +38,7 @@
     "simple-demo-with-navigation": "concurrently -r 'npm run watch' 'webpack --entry ./lib/simple-demo-with-navigation/index.js --output-filename demo/simple-demo-with-navigation/bundle.js --watch' 'http-server ./demo/simple-demo-with-navigation/'"
   },
   "dependencies": {
-    "hathaway": "0.0.7",
+    "hathaway": "0.0.10",
     "immutable": "^3.8.2",
     "react": "^16.2.0",
     "react-dom": "^16.2.0"

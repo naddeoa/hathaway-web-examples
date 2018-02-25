@@ -1,7 +1,6 @@
 import * as React from 'react';
-import { ViewProps } from 'hathaway';
-import { MyModel, UserProfileModel, lookupUserProfile, currentlyFetching } from '../Model';
-import Msg from '../Msg';
+
+import { UserProfileModel } from '../Model';
 
 function UserStats({ profile }: { profile: UserProfileModel }) {
     return (
@@ -17,17 +16,21 @@ function UserStats({ profile }: { profile: UserProfileModel }) {
     );
 }
 
-const View: React.SFC<ViewProps<MyModel, Msg, null>> = ({ model }: ViewProps<MyModel, Msg, null>) => {
-    const username = model.get('showProfile');
+export type Props = {
+    username: string | null,
+    isFetching: boolean,
+    profile: UserProfileModel | null
+}
+
+const View: React.SFC<Props> = ({ username, isFetching, profile }: Props) => {
     if (username === null) {
         return <div>Try to search for a github username</div>;
     }
 
-    if (currentlyFetching(username, model)) {
+    if (isFetching) {
         return <div>Fetching user...</div>;
     }
 
-    const profile = lookupUserProfile(username, model);
     if (profile === null) {
         return (
             <div>Can't find user {username}</div>

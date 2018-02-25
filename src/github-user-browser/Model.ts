@@ -1,10 +1,10 @@
-import { createModel, ImmutableModel, Cmd, NoOp, Dispatch } from 'hathaway';
-import { Map, List } from 'immutable';
-import { UserProfile, Repo, ProgrammingLanguages } from './GithubApi';
-import { parseRoute } from './Routes';
+import { Cmd, CmdResultArgs, createModel, ImmutableModel, NoOp } from 'hathaway';
+import { List, Map } from 'immutable';
+import { ProgrammingLanguages, Repo, UserProfile } from './GithubApi';
 import Msg from './Msg';
+import { parseRoute } from './Routes';
 
-export function modelSet(key: keyof MyModel, value: MyModel[keyof MyModel], model: ImmutableModel<MyModel>) : ImmutableModel<MyModel>{
+export function modelSet(key: keyof MyModel, value: MyModel[keyof MyModel], model: ImmutableModel<MyModel>): ImmutableModel<MyModel> {
     return model.set(key, value);
 }
 
@@ -46,15 +46,8 @@ export function addRepos(profile: UserProfileModel, repos: Repo[], model: Immuta
     return model.set('repos', updatedRepos);
 }
 
-export function lookupRepos(profile: UserProfileModel, model: ImmutableModel<MyModel>): ReposModel | null {
-    // TODO make this one line
-    const repos = model.get('repos').get(profile.get('id'));
-
-    if (!repos) {
-        return null;
-    }
-
-    return repos;
+export function lookupRepos(profile: UserProfileModel, model: ImmutableModel<MyModel>): ReposModel {
+    return model.get('repos').get(profile.get('id')) || List();
 }
 
 export function addProgammingLanguages(repo: RepoModel, languages: ProgrammingLanguages, model: ImmutableModel<MyModel>): ImmutableModel<MyModel> {
@@ -107,9 +100,9 @@ function getInitialCmd(): Cmd<MyModel, Msg> {
     const cmd: Cmd<MyModel, Msg> = {
         type: 'AsyncCmd',
         promise: Promise.resolve(),
-        successFunction: (dispatch: Dispatch<Msg>, model: Model, _result: null) => {
+        successFunction: ({ dispatch, model }: CmdResultArgs<MyModel, Msg, null>) => {
             dispatch({ type: 'OnUsernameSearch', pushInHistory: true });
-            return [model, NoOp];
+            return { model };
         }
     };
 
